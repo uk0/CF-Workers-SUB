@@ -527,308 +527,328 @@ async function KV(request, env, txt = 'ADD.txt', guest) {
 
 		const html = `
 			<!DOCTYPE html>
-			<html>
+			<html lang="zh-CN">
 				<head>
 					<title>${FileName}</title>
 					<meta charset="utf-8">
 					<meta name="viewport" content="width=device-width, initial-scale=1">
 					<style>
-						* { margin: 0; padding: 0; box-sizing: border-box; }
+						*, *::before, *::after { box-sizing: border-box; }
 						body {
-							font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-							background: #f5f5f5;
-							color: #333;
-							padding: 20px;
-							font-size: 14px;
+							margin: 0;
+							font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Roboto, sans-serif;
+							background: linear-gradient(180deg, #f7f8fa 0%, #eef1f6 100%);
+							min-height: 100vh;
+							color: #1f2937;
+							padding: 32px 16px;
+							-webkit-font-smoothing: antialiased;
 						}
-						.container {
-							max-width: 800px;
-							margin: 0 auto;
+						.container { max-width: 760px; margin: 0 auto; }
+						.header {
+							display: flex; align-items: baseline; justify-content: space-between;
+							margin: 0 4px 20px;
 						}
-						h2 {
-							font-size: 18px;
-							margin-bottom: 12px;
-							color: #222;
+						.header h1 {
+							margin: 0; font-size: 20px; font-weight: 600;
+							color: #111827; letter-spacing: 0.2px;
+						}
+						.header .badge {
+							font-size: 11px; color: #6b7280; padding: 3px 10px;
+							background: #fff; border-radius: 999px; border: 1px solid #e5e7eb;
+							letter-spacing: 0.3px;
 						}
 						.card {
 							background: #fff;
-							border-radius: 8px;
-							padding: 16px 20px;
+							border: 1px solid #e5e7eb;
+							border-radius: 12px;
+							padding: 20px;
 							margin-bottom: 16px;
-							box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+							box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 						}
-						.sub-item {
-							display: flex;
-							align-items: center;
-							justify-content: space-between;
-							padding: 8px 0;
-							border-bottom: 1px solid #f0f0f0;
+						.card-head {
+							display: flex; align-items: center; justify-content: space-between;
+							margin-bottom: 14px; gap: 12px; flex-wrap: wrap;
 						}
-						.sub-item:last-child { border-bottom: none; }
-						.sub-label {
-							font-weight: 500;
-							min-width: 80px;
-							color: #555;
+						.card-title { font-size: 14px; font-weight: 600; color: #111827; }
+						.switch {
+							display: inline-flex; padding: 3px;
+							background: #f3f4f6; border-radius: 8px; gap: 2px;
 						}
-						.sub-link {
-							color: #1a73e8;
-							text-decoration: none;
-							word-break: break-all;
-							cursor: pointer;
-							flex: 1;
-							margin: 0 10px;
+						.switch button {
+							border: 0; background: transparent; padding: 6px 14px;
+							font-size: 12px; color: #6b7280; cursor: pointer; border-radius: 6px;
+							transition: all 0.15s;
 						}
-						.sub-link:hover { text-decoration: underline; }
-						.qr-wrap { margin: 6px 0 6px 90px; }
-						.toggle-link {
-							display: inline-block;
-							margin-top: 8px;
-							color: #1a73e8;
-							cursor: pointer;
-							font-size: 13px;
-							text-decoration: none;
+						.switch button.active {
+							background: #fff; color: #111827;
+							box-shadow: 0 1px 2px rgba(0,0,0,0.06);
 						}
-						.toggle-link:hover { text-decoration: underline; }
-						.guest-section {
-							margin-top: 12px;
-							padding-top: 12px;
-							border-top: 1px solid #eee;
+						.formats {
+							display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;
+							margin-bottom: 14px;
 						}
-						.editor-container { margin-top: 4px; }
+						.formats button {
+							border: 1px solid #e5e7eb;
+							background: #fff;
+							padding: 8px 6px;
+							font-size: 12px; color: #4b5563; cursor: pointer;
+							border-radius: 8px;
+							transition: all 0.15s;
+						}
+						.formats button:hover { border-color: #c7d2fe; color: #4f46e5; }
+						.formats button.active {
+							background: #4f46e5; color: #fff; border-color: #4f46e5;
+						}
+						.url-row {
+							display: flex; align-items: center; gap: 8px;
+							background: #f9fafb;
+							border: 1px solid #e5e7eb;
+							border-radius: 8px;
+							padding: 8px 8px 8px 12px;
+						}
+						.url-row input {
+							flex: 1; min-width: 0; border: 0; background: transparent;
+							font-size: 12px; color: #1f2937; outline: none;
+							font-family: "SF Mono", Monaco, Consolas, "Courier New", monospace;
+						}
+						.url-row button {
+							border: 0; background: #111827; color: #fff;
+							padding: 6px 14px; border-radius: 6px;
+							font-size: 12px; cursor: pointer;
+							transition: background 0.15s;
+						}
+						.url-row button:hover { background: #4f46e5; }
+						.qr-wrap {
+							display: flex; justify-content: center;
+							padding: 18px 0 4px;
+						}
+						.qr-wrap > div { padding: 8px; background: #fff; border-radius: 8px; border: 1px solid #f3f4f6; }
 						.editor {
 							width: 100%;
-							height: 280px;
-							padding: 12px;
-							border: 1px solid #ddd;
-							border-radius: 6px;
-							font-size: 13px;
-							font-family: "SF Mono", Monaco, Consolas, monospace;
+							min-height: 280px;
+							padding: 12px 14px;
+							border: 1px solid #e5e7eb;
+							border-radius: 8px;
+							font-size: 12px;
+							font-family: "SF Mono", Monaco, Consolas, "Courier New", monospace;
 							line-height: 1.6;
 							resize: vertical;
 							outline: none;
-							transition: border-color 0.2s;
+							background: #fcfcfd;
+							color: #1f2937;
+							transition: border-color 0.15s, box-shadow 0.15s;
 						}
-						.editor:focus { border-color: #1a73e8; }
-						.save-container {
-							margin-top: 10px;
-							display: flex;
-							align-items: center;
-							gap: 12px;
+						.editor:focus {
+							border-color: #4f46e5;
+							box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+							background: #fff;
 						}
+						.save-row {
+							display: flex; align-items: center; justify-content: space-between;
+							margin-top: 12px; gap: 12px; flex-wrap: wrap;
+						}
+						.save-hint { font-size: 11px; color: #9ca3af; }
 						.save-btn {
-							padding: 8px 24px;
+							padding: 8px 22px;
 							color: #fff;
-							background: #1a73e8;
-							border: none;
-							border-radius: 6px;
+							background: #111827;
+							border: 0;
+							border-radius: 8px;
 							cursor: pointer;
-							font-size: 14px;
-							transition: background 0.2s;
+							font-size: 13px;
+							transition: background 0.15s;
 						}
-						.save-btn:hover { background: #1557b0; }
-						.save-btn:disabled { background: #93b8e8; cursor: default; }
-						.save-status { color: #888; font-size: 13px; }
+						.save-btn:hover { background: #4f46e5; }
+						.save-btn:disabled { background: #9ca3af; cursor: not-allowed; }
+						.save-status { color: #9ca3af; font-size: 12px; }
+						.empty-hint { color: #9ca3af; font-size: 13px; margin: 0; }
+						.toast {
+							position: fixed; bottom: 28px; left: 50%;
+							transform: translateX(-50%) translateY(20px);
+							background: #111827; color: #fff;
+							padding: 9px 18px; border-radius: 999px;
+							font-size: 12px; opacity: 0;
+							transition: opacity 0.2s, transform 0.2s;
+							pointer-events: none;
+							box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+						}
+						.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+						@media (max-width: 540px) {
+							body { padding: 18px 12px; }
+							.formats { grid-template-columns: repeat(3, 1fr); }
+							.url-row { flex-wrap: wrap; padding: 10px 12px; }
+							.url-row input { width: 100%; padding: 4px 0; }
+							.url-row button { width: 100%; padding: 8px; }
+						}
 					</style>
 					<script src="https://cdn.jsdelivr.net/npm/@keeex/qrcodejs-kx@1.0.2/qrcode.min.js"></script>
 				</head>
 				<body>
 				<div class="container">
-					<div class="card">
-						<h2>订阅地址</h2>
-						<p style="font-size:12px;color:#888;margin-bottom:10px;">点击链接复制并生成二维码</p>
-						<div class="sub-item"><span class="sub-label">自适应</span><a class="sub-link" href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?sub','qrcode_0')">https://${url.hostname}/${mytoken}</a></div>
-						<div class="qr-wrap" id="qrcode_0"></div>
-						<div class="sub-item"><span class="sub-label">Base64</span><a class="sub-link" href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?b64','qrcode_1')">https://${url.hostname}/${mytoken}?b64</a></div>
-						<div class="qr-wrap" id="qrcode_1"></div>
-						<div class="sub-item"><span class="sub-label">Clash</span><a class="sub-link" href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?clash','qrcode_2')">https://${url.hostname}/${mytoken}?clash</a></div>
-						<div class="qr-wrap" id="qrcode_2"></div>
-						<div class="sub-item"><span class="sub-label">SingBox</span><a class="sub-link" href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?sb','qrcode_3')">https://${url.hostname}/${mytoken}?sb</a></div>
-						<div class="qr-wrap" id="qrcode_3"></div>
-						<div class="sub-item"><span class="sub-label">Surge</span><a class="sub-link" href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?surge','qrcode_4')">https://${url.hostname}/${mytoken}?surge</a></div>
-						<div class="qr-wrap" id="qrcode_4"></div>
-						<div class="sub-item"><span class="sub-label">Loon</span><a class="sub-link" href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?loon','qrcode_5')">https://${url.hostname}/${mytoken}?loon</a></div>
-						<div class="qr-wrap" id="qrcode_5"></div>
-						<a class="toggle-link" id="noticeToggle" onclick="toggleNotice()">访客订阅 ▾</a>
-						<div id="noticeContent" class="guest-section" style="display:none;">
-							<div class="sub-item"><span class="sub-label">自适应</span><a class="sub-link" href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}','guest_0')">https://${url.hostname}/sub?token=${guest}</a></div>
-							<div class="qr-wrap" id="guest_0"></div>
-							<div class="sub-item"><span class="sub-label">Base64</span><a class="sub-link" href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}&b64','guest_1')">https://${url.hostname}/sub?token=${guest}&b64</a></div>
-							<div class="qr-wrap" id="guest_1"></div>
-							<div class="sub-item"><span class="sub-label">Clash</span><a class="sub-link" href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}&clash','guest_2')">https://${url.hostname}/sub?token=${guest}&clash</a></div>
-							<div class="qr-wrap" id="guest_2"></div>
-							<div class="sub-item"><span class="sub-label">SingBox</span><a class="sub-link" href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}&sb','guest_3')">https://${url.hostname}/sub?token=${guest}&sb</a></div>
-							<div class="qr-wrap" id="guest_3"></div>
-							<div class="sub-item"><span class="sub-label">Surge</span><a class="sub-link" href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}&surge','guest_4')">https://${url.hostname}/sub?token=${guest}&surge</a></div>
-							<div class="qr-wrap" id="guest_4"></div>
-							<div class="sub-item"><span class="sub-label">Loon</span><a class="sub-link" href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}&loon','guest_5')">https://${url.hostname}/sub?token=${guest}&loon</a></div>
-							<div class="qr-wrap" id="guest_5"></div>
-						</div>
+					<div class="header">
+						<h1>${FileName}</h1>
+						<span class="badge">订阅聚合</span>
 					</div>
 					<div class="card">
-						<h2>节点编辑</h2>
-						<div class="editor-container">
-							${hasKV ? `
-							<textarea class="editor" placeholder="每行一个节点链接或订阅地址" id="content">${content}</textarea>
-							<div class="save-container">
-								<button class="save-btn" onclick="saveContent(this)">保存</button>
-								<span class="save-status" id="saveStatus"></span>
+						<div class="card-head">
+							<div class="card-title">订阅地址</div>
+							<div class="switch" id="modeSwitch">
+								<button data-mode="owner" class="active">主订阅</button>
+								<button data-mode="guest">访客</button>
 							</div>
-							` : '<p style="color:#999;">请绑定 KV 命名空间</p>'}
+						</div>
+						<div class="formats" id="formats">
+							<button data-fmt="" class="active">自适应</button>
+							<button data-fmt="b64">Base64</button>
+							<button data-fmt="clash">Clash</button>
+							<button data-fmt="sb">SingBox</button>
+							<button data-fmt="surge">Surge</button>
+							<button data-fmt="loon">Loon</button>
+						</div>
+						<div class="url-row">
+							<input id="subUrl" readonly value="">
+							<button onclick="copyUrl()">复制</button>
+						</div>
+						<div class="qr-wrap" id="qrcode"></div>
+					</div>
+					${hasKV ? `
+					<div class="card">
+						<div class="card-head">
+							<div class="card-title">节点编辑</div>
+							<span class="save-status" id="saveStatus"></span>
+						</div>
+						<textarea class="editor" id="content" placeholder="每行一个节点链接或订阅地址">${content}</textarea>
+						<div class="save-row">
+							<span class="save-hint">支持 vmess / vless / trojan / ss / hysteria 等节点链接和订阅地址</span>
+							<button class="save-btn" onclick="saveContent(this)">保存</button>
 						</div>
 					</div>
+					` : `
+					<div class="card">
+						<div class="card-head"><div class="card-title">节点编辑</div></div>
+						<p class="empty-hint">请在 Workers 中绑定 KV 命名空间以启用在线编辑</p>
+					</div>
+					`}
 				</div>
-					<script>
-					function copyToClipboard(text, qrcode) {
-						navigator.clipboard.writeText(text).then(() => {
-							alert('已复制到剪贴板');
-						}).catch(err => {
-							console.error('复制失败:', err);
-						});
-						const qrcodeDiv = document.getElementById(qrcode);
-						qrcodeDiv.innerHTML = '';
-						new QRCode(qrcodeDiv, {
-							text: text,
-							width: 220, // 调整宽度
-							height: 220, // 调整高度
-							colorDark: "#000000", // 二维码颜色
-							colorLight: "#ffffff", // 背景颜色
-							correctLevel: QRCode.CorrectLevel.Q, // 设置纠错级别
-							scale: 1 // 调整像素颗粒度
+				<div class="toast" id="toast">已复制</div>
+				<script>
+					const ownerBase = 'https://${url.hostname}/${mytoken}';
+					const guestBase = 'https://${url.hostname}/sub?token=${guest}';
+					let mode = 'owner';
+					let fmt = '';
+
+					function buildUrl() {
+						const base = mode === 'owner' ? ownerBase : guestBase;
+						if (!fmt) return base;
+						const sep = base.includes('?') ? '&' : '?';
+						return base + sep + fmt;
+					}
+
+					function render() {
+						const link = buildUrl();
+						document.getElementById('subUrl').value = link;
+						const qr = document.getElementById('qrcode');
+						qr.innerHTML = '';
+						new QRCode(qr, {
+							text: link,
+							width: 200,
+							height: 200,
+							colorDark: "#111827",
+							colorLight: "#ffffff",
+							correctLevel: QRCode.CorrectLevel.Q
 						});
 					}
-						
-					if (document.querySelector('.editor')) {
+
+					document.getElementById('modeSwitch').addEventListener('click', e => {
+						const btn = e.target.closest('button');
+						if (!btn) return;
+						document.querySelectorAll('#modeSwitch button').forEach(b => b.classList.remove('active'));
+						btn.classList.add('active');
+						mode = btn.dataset.mode;
+						render();
+					});
+
+					document.getElementById('formats').addEventListener('click', e => {
+						const btn = e.target.closest('button');
+						if (!btn) return;
+						document.querySelectorAll('#formats button').forEach(b => b.classList.remove('active'));
+						btn.classList.add('active');
+						fmt = btn.dataset.fmt;
+						render();
+					});
+
+					let toastTimer;
+					function toast(msg) {
+						const t = document.getElementById('toast');
+						t.textContent = msg;
+						t.classList.add('show');
+						clearTimeout(toastTimer);
+						toastTimer = setTimeout(() => t.classList.remove('show'), 1600);
+					}
+
+					function copyUrl() {
+						const link = document.getElementById('subUrl').value;
+						const done = () => toast('已复制到剪贴板');
+						if (navigator.clipboard && window.isSecureContext) {
+							navigator.clipboard.writeText(link).then(done).catch(fallback);
+						} else {
+							fallback();
+						}
+						function fallback() {
+							const tmp = document.createElement('textarea');
+							tmp.value = link; tmp.style.position = 'fixed'; tmp.style.opacity = '0';
+							document.body.appendChild(tmp); tmp.select();
+							try { document.execCommand('copy'); done(); } catch (_) { toast('复制失败'); }
+							document.body.removeChild(tmp);
+						}
+					}
+
+					render();
+
+					const textarea = document.getElementById('content');
+					if (textarea) {
 						let timer;
-						const textarea = document.getElementById('content');
-						const originalContent = textarea.value;
-		
-						function goBack() {
-							const currentUrl = window.location.href;
-							const parentUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
-							window.location.href = parentUrl;
-						}
-		
-						function replaceFullwidthColon() {
-							const text = textarea.value;
-							textarea.value = text.replace(/：/g, ':');
-						}
-						
 						function saveContent(button) {
-							try {
-								const updateButtonText = (step) => {
-									button.textContent = \`保存中: \${step}\`;
-								};
-								// 检测是否为iOS设备
-								const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-								
-								// 仅在非iOS设备上执行replaceFullwidthColon
-								if (!isIOS) {
-									replaceFullwidthColon();
-								}
-								updateButtonText('开始保存');
-								button.disabled = true;
-
-								// 获取textarea内容和原始内容
-								const textarea = document.getElementById('content');
-								if (!textarea) {
-									throw new Error('找不到文本编辑区域');
-								}
-
-								updateButtonText('获取内容');
-								let newContent;
-								let originalContent;
-								try {
-									newContent = textarea.value || '';
-									originalContent = textarea.defaultValue || '';
-								} catch (e) {
-									console.error('获取内容错误:', e);
-									throw new Error('无法获取编辑内容');
-								}
-
-								updateButtonText('准备状态更新函数');
-								const updateStatus = (message, isError = false) => {
-									const statusElem = document.getElementById('saveStatus');
-									if (statusElem) {
-										statusElem.textContent = message;
-										statusElem.style.color = isError ? 'red' : '#666';
-									}
-								};
-
-								updateButtonText('准备按钮重置函数');
-								const resetButton = () => {
-									button.textContent = '保存';
-									button.disabled = false;
-								};
-
-								if (newContent !== originalContent) {
-									updateButtonText('发送保存请求');
-									fetch(window.location.href, {
-										method: 'POST',
-										body: newContent,
-										headers: {
-											'Content-Type': 'text/plain;charset=UTF-8'
-										},
-										cache: 'no-cache'
-									})
-									.then(response => {
-										updateButtonText('检查响应状态');
-										if (!response.ok) {
-											throw new Error(\`HTTP error! status: \${response.status}\`);
-										}
-										updateButtonText('更新保存状态');
-										const now = new Date().toLocaleString();
-										document.title = \`编辑已保存 \${now}\`;
-										updateStatus(\`已保存 \${now}\`);
-									})
-									.catch(error => {
-										updateButtonText('处理错误');
-										console.error('Save error:', error);
-										updateStatus(\`保存失败: \${error.message}\`, true);
-									})
-									.finally(() => {
-										resetButton();
-									});
-								} else {
-									updateButtonText('检查内容变化');
-									updateStatus('内容未变化');
-									resetButton();
-								}
-							} catch (error) {
-								console.error('保存过程出错:', error);
-								button.textContent = '保存';
-								button.disabled = false;
-								const statusElem = document.getElementById('saveStatus');
-								if (statusElem) {
-									statusElem.textContent = \`错误: \${error.message}\`;
-									statusElem.style.color = 'red';
-								}
+							const status = document.getElementById('saveStatus');
+							const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+							if (!isIOS) textarea.value = textarea.value.replace(/：/g, ':');
+							const newContent = textarea.value || '';
+							const originalContent = textarea.defaultValue || '';
+							if (newContent === originalContent) {
+								status.style.color = '#9ca3af';
+								status.textContent = '内容未变化';
+								return;
 							}
+							if (button) { button.disabled = true; button.textContent = '保存中…'; }
+							status.style.color = '#9ca3af';
+							status.textContent = '保存中…';
+							fetch(window.location.href, {
+								method: 'POST',
+								body: newContent,
+								headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+								cache: 'no-cache'
+							}).then(r => {
+								if (!r.ok) throw new Error('HTTP ' + r.status);
+								const now = new Date().toLocaleTimeString();
+								document.title = '已保存 ' + now;
+								status.style.color = '#10b981';
+								status.textContent = '已于 ' + now + ' 保存';
+								textarea.defaultValue = newContent;
+							}).catch(err => {
+								status.style.color = '#dc2626';
+								status.textContent = '保存失败: ' + err.message;
+							}).finally(() => {
+								if (button) { button.disabled = false; button.textContent = '保存'; }
+							});
 						}
-		
-						textarea.addEventListener('blur', saveContent);
+						window.saveContent = saveContent;
+						textarea.addEventListener('blur', () => saveContent());
 						textarea.addEventListener('input', () => {
 							clearTimeout(timer);
-							timer = setTimeout(saveContent, 5000);
+							timer = setTimeout(() => saveContent(), 5000);
 						});
 					}
-
-					function toggleNotice() {
-						const noticeContent = document.getElementById('noticeContent');
-						const noticeToggle = document.getElementById('noticeToggle');
-						if (noticeContent.style.display === 'none' || noticeContent.style.display === '') {
-							noticeContent.style.display = 'block';
-							noticeToggle.textContent = '访客订阅 ▴';
-						} else {
-							noticeContent.style.display = 'none';
-							noticeToggle.textContent = '访客订阅 ▾';
-						}
-					}
-			
-					// 初始化 noticeContent 的 display 属性
-					document.addEventListener('DOMContentLoaded', () => {
-						document.getElementById('noticeContent').style.display = 'none';
-					});
-					</script>
+				</script>
 				</body>
 			</html>
 		`;
